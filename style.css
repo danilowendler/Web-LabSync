@@ -1,0 +1,314 @@
+:root {
+    --dasa-blue: #020381;
+    --dasa-dark: #231F20;
+    --dasa-light: #F8F9FA;
+    --bs-primary-rgb: 2, 3, 129;
+    --bs-success-rgb: 40, 167, 69;
+}
+
+/* ===== Estrutura Base e Telas ===== */
+body {
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+}
+
+.kiosk-screen {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.kiosk-screen.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.kiosk-screen--intro {
+    background: linear-gradient(270deg, #020381, #004aad, #007BFF, #020381);
+    background-size: 600% 600%;
+    animation: gradientShift 12s ease infinite;
+    color: white;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ===== Componentes Reutilizáveis (BEM) ===== */
+.nfc-icon {
+    width: 100px;
+    height: 100px;
+    margin: 20px auto;
+    background-color: var(--dasa-blue);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.nfc-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(2, 3, 129, 0.5);
+}
+.nfc-icon svg {
+    width: 50px;
+    height: 50px;
+}
+.nfc-icon--confirm {
+    background-color: var(--bs-success);
+}
+
+.item-grid {
+    max-height: calc(100vh - 250px);
+    overflow-y: auto;
+    padding-bottom: 100px;
+}
+
+.item-card {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.item-card--selected {
+    border-width: 2px;
+    box-shadow: 0 0 10px rgba(2, 3, 129, 0.4);
+}
+
+.success-check {
+    font-size: 100px;
+    color: var(--bs-success);
+    margin-bottom: 20px;
+}
+
+.cart-summary {
+    position: relative;
+    cursor: pointer;
+    padding: 8px;
+}
+.cart-summary__icon {
+    width: 32px;
+    height: 32px;
+    color: var(--dasa-blue);
+    transition: transform 0.2s ease;
+}
+.cart-summary__badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 12px;
+}
+
+.modal-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1050;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.modal-backdrop.active {
+    display: block;
+    opacity: 1;
+}
+
+.item-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    z-index: 1060;
+    width: 90%;
+    max-width: 500px;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.item-modal.active {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+.item-modal__content {
+    background-color: white;
+    padding: 40px 24px 24px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+}
+.item-modal__close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 2.5rem;
+    font-weight: 300;
+    border: none;
+    background: none;
+    cursor: pointer;
+    line-height: 1;
+}
+
+/* Estilos para o Resumo da Retirada na Tela de Sucesso */
+.withdrawal-summary {
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    /* Animação de entrada */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInSummary 0.8s 0.3s ease forwards; /* Delay de 0.3s */
+}
+
+.withdrawal-summary .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--dasa-light);
+    border-color: #e0e0e0;
+}
+
+@keyframes fadeInSummary {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== Animações de Feedback Visual ===== */
+.animate-fade {
+    animation: fadeIn 2s ease forwards;
+}
+@keyframes fadeIn {
+    0% { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.cart-summary.animate-shake {
+    animation: shake 0.5s ease;
+}
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.item-card.animate-flash {
+    animation: flash 0.7s ease;
+}
+@keyframes flash {
+    0% { background-color: white; }
+    50% { background-color: rgba(40, 167, 69, 0.1); }
+    100% { background-color: white; }
+}
+
+/* Estilos para Skeleton Loading */
+.skeleton-card {
+    background-color: #e0e0e0;
+    border-radius: var(--bs-card-border-radius);
+    overflow: hidden;
+    position: relative;
+}
+.skeleton-card__image {
+    height: 140px;
+    background-color: #c0c0c0;
+}
+.skeleton-card__body {
+    padding: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
+}
+.skeleton-card__line {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.25rem;
+    background-color: #c0c0c0;
+}
+.skeleton-card__line--short {
+    width: 60%;
+}
+
+.skeleton-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(90deg, 
+        rgba(255,255,255,0) 0, 
+        rgba(255,255,255,0.2) 20%, 
+        rgba(255,255,255,0.5) 60%, 
+        rgba(255,255,255,0));
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Estilos para o Sistema de Toast */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.toast-notification {
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateX(100%);
+    animation: slideIn 0.5s forwards;
+}
+.toast-notification.success {
+    background-color: var(--bs-success);
+}
+.toast-notification.error {
+    background-color: var(--bs-danger);
+}
+.toast-notification.info {
+    background-color: #0d6efd; /* Bootstrap Info Blue */
+}
+.toast-notification.closing {
+    animation: slideOut 0.5s forwards;
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
