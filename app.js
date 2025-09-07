@@ -8,17 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
         lastWithdrawal: []
     };
     
-    // Dados que viriam da API
     const apiItems = [
-        { id: 1, name: 'Agulha Tipo 1', code: 'Cód.001', stock: 'normal', quantity: 0, maxStock: 20 },
-        { id: 2, name: 'Seringa 5ml', code: 'Cód.006', stock: 'critical', quantity: 0, maxStock: 5 },
-        { id: 3, name: 'Luva Nitrílica', code: 'Cód.003', stock: 'normal', quantity: 0, maxStock: 50 },
-        { id: 4, name: 'Gaze Estéril', code: 'Cód.004', stock: 'normal', quantity: 0, maxStock: 100 },
-        { id: 5, name: 'Álcool 70%', code: 'Cód.005', stock: 'normal', quantity: 0, maxStock: 15 },
-        { id: 6, name: 'Esparadrapo', code: 'Cód.007', stock: 'critical', quantity: 0, maxStock: 10 }
+        { id: 1, name: 'Agulha Tipo 1', code: 'Cód.001', stock: 'normal', quantity: 0, maxStock: 20, imageUrl: 'images/agulha.webp' },
+        { id: 2, name: 'Seringa 5ml', code: 'Cód.006', stock: 'critical', quantity: 0, maxStock: 5, imageUrl: 'images/seringa.webp' },
+        { id: 3, name: 'Luva Nitrílica', code: 'Cód.003', stock: 'normal', quantity: 0, maxStock: 50, imageUrl: 'images/luva_nitrilica.webp' },
+        { id: 4, name: 'Gaze Estéril', code: 'Cód.004', stock: 'normal', quantity: 0, maxStock: 100, imageUrl: 'images/gaze_esteril.png' },
+        { id: 5, name: 'Álcool 70%', code: 'Cód.005', stock: 'normal', quantity: 0, maxStock: 15, imageUrl: 'images/alcool_70.webp' },
+        { id: 6, name: 'Esparadrapo', code: 'Cód.007', stock: 'critical', quantity: 0, maxStock: 10, imageUrl: 'images/esparadrapo.jpg' }
     ];
 
     // ================= DOM SELECTORS =================
+    const nfcConfirmBtn = document.getElementById('nfcConfirmBtn'); 
     const itemGrid = document.getElementById('itemGrid');
     const reviewBtn = document.getElementById('reviewBtn');
     const reviewList = document.getElementById('reviewList');
@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function fetchItems() {
         state.isLoading = true;
         updateAllUI();
-        
         return new Promise(resolve => {
             setTimeout(() => {
                 state.items = apiItems.map(item => ({ ...item, quantity: 0 }));
@@ -46,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 1500);
         });
     }
-    
+
     function submitWithdrawal() {
         return new Promise((resolve, reject) => {
             showToast('Enviando retirada...', 'info');
@@ -85,19 +84,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const atMaxStock = item.quantity >= item.maxStock;
 
             const colDiv = document.createElement('div');
-            colDiv.className = 'col-6 col-md-4 col-lg-3 mb-4';
+            colDiv.className = 'col-12 col-md-6 col-lg-4 mb-4'; // Ajuste de colunas para melhor espaçamento
             colDiv.dataset.itemId = item.id;
 
             const cardDiv = document.createElement('div');
             cardDiv.className = `card item-card h-100 ${isSelected ? 'border-primary item-card--selected' : ''} ${item.stock === 'critical' ? 'border-danger' : ''}`;
             
-            const img = document.createElement('img');
-            img.src = `https://via.placeholder.com/150?text=${item.name.replace(' ', '+')}`;
-            img.className = 'card-img-top';
-            img.alt = item.name;
+            const cardContentWrapper = document.createElement('div');
+            cardContentWrapper.className = 'item-card__content-wrapper';
 
+            const img = document.createElement('img');
+            img.src = item.imageUrl;
+            img.className = 'item-card__image';
+            img.alt = item.name;
+            
             const cardBody = document.createElement('div');
-            cardBody.className = 'card-body d-flex flex-column';
+            cardBody.className = 'card-body';
             
             const title = document.createElement('h5');
             title.className = 'card-title';
@@ -132,7 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             cardBody.append(title, text, stockInfo, button);
-            cardDiv.append(img, cardBody);
+            
+            // ATUALIZADO: A imagem (img) agora é adicionada ANTES do corpo do texto (cardBody)
+            cardContentWrapper.append(img, cardBody); 
+            
+            cardDiv.appendChild(cardContentWrapper);
             colDiv.appendChild(cardDiv);
             itemGrid.appendChild(colDiv);
         });
@@ -140,13 +146,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderSkeletons() {
         itemGrid.innerHTML = '';
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 6; i++) { // Reduzido para 6 para melhor visualização
             const colDiv = document.createElement('div');
-            colDiv.className = 'col-6 col-md-4 col-lg-3 mb-4';
-            
+            colDiv.className = 'col-12 col-md-6 col-lg-4 mb-4';
             const cardDiv = document.createElement('div');
             cardDiv.className = 'card h-100 skeleton-card';
             
+            const wrapperDiv = document.createElement('div');
+            wrapperDiv.className = 'item-card__content-wrapper'; // Usa a mesma classe para consistência
+
             const imgDiv = document.createElement('div');
             imgDiv.className = 'skeleton-card__image';
             
@@ -160,7 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
             line2.className = 'skeleton-card__line skeleton-card__line--short';
             
             bodyDiv.append(line1, line2);
-            cardDiv.append(imgDiv, bodyDiv);
+            wrapperDiv.append(imgDiv, bodyDiv)
+            cardDiv.appendChild(wrapperDiv);
             colDiv.appendChild(cardDiv);
             itemGrid.appendChild(colDiv);
         }
@@ -169,12 +178,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderReviewScreen() {
         reviewList.innerHTML = '';
         const itemsInCart = state.items.filter(item => item.quantity > 0);
-
         itemsInCart.forEach(item => {
             const atMaxStock = item.quantity >= item.maxStock;
             const itemDiv = document.createElement('div');
             itemDiv.className = 'd-flex justify-content-between align-items-center mb-3 p-3 bg-white rounded shadow-sm';
-            
             const infoDiv = document.createElement('div');
             const nameH5 = document.createElement('h5');
             nameH5.textContent = item.name;
@@ -182,22 +189,18 @@ document.addEventListener('DOMContentLoaded', () => {
             codeP.className = 'mb-0 text-muted';
             codeP.textContent = `${item.code} (Máx: ${item.maxStock})`;
             infoDiv.append(nameH5, codeP);
-
             const controlsDiv = document.createElement('div');
             controlsDiv.className = 'd-flex align-items-center gap-2';
-
             const minusBtn = document.createElement('button');
             minusBtn.className = 'btn btn-outline-danger';
             minusBtn.textContent = '-';
             minusBtn.addEventListener('click', () => handleChangeQuantity(item.id, -1));
-
             const quantityInput = document.createElement('input');
             quantityInput.type = 'text';
             quantityInput.readOnly = true;
             quantityInput.value = item.quantity;
             quantityInput.className = 'form-control text-center';
             quantityInput.style.width = '60px';
-
             const plusBtn = document.createElement('button');
             plusBtn.className = 'btn btn-outline-success';
             plusBtn.textContent = '+';
@@ -205,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 plusBtn.disabled = true;
             }
             plusBtn.addEventListener('click', () => handleChangeQuantity(item.id, 1));
-
             controlsDiv.append(minusBtn, quantityInput, plusBtn);
             itemDiv.append(infoDiv, controlsDiv);
             reviewList.appendChild(itemDiv);
@@ -241,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         document.getElementById(screenId).classList.add('active');
         state.currentScreen = screenId;
-
         if (screenId === 'screen2' && state.items.length === 0) {
             fetchItems().then(() => {
                 updateAllUI();
@@ -249,49 +250,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // ================= TOAST NOTIFICATION SYSTEM =================
     function showToast(message, type = 'info') {
+        const existingToast = document.querySelector(`.toast-notification[data-message="${message}"]`);
+        if (existingToast) {
+            return;
+        }
         const toast = document.createElement('div');
         toast.className = `toast-notification ${type}`;
         toast.textContent = message;
-        
+        toast.dataset.message = message;
         toastContainer.appendChild(toast);
-        
         setTimeout(() => {
             toast.classList.add('closing');
             toast.addEventListener('animationend', () => toast.remove());
         }, 4000);
     }
 
-    // ================= MODAL LOGIC =================
     function openItemModal(itemId) {
         const item = state.items.find(i => i.id === itemId);
         if (!item) return;
-
         modalBody.innerHTML = '';
         const atMaxStock = item.quantity >= item.maxStock;
-
         const title = document.createElement('h2');
         title.className = 'text-center mb-2';
         title.textContent = item.name;
-
         const code = document.createElement('p');
         code.className = 'text-center text-muted mt-0';
         code.textContent = `${item.code} | Em estoque: ${item.maxStock}`;
-        
         const controlsDiv = document.createElement('div');
         controlsDiv.className = 'd-flex align-items-center justify-content-center gap-3 my-4';
-
         const minusBtn = document.createElement('button');
         minusBtn.className = 'btn btn-lg btn-outline-danger';
         minusBtn.textContent = '-';
         minusBtn.addEventListener('click', () => handleChangeQuantity(item.id, -1, true));
-        
         const quantityDisplay = document.createElement('span');
         quantityDisplay.id = 'modalQuantityDisplay';
         quantityDisplay.className = 'h2 fw-bold mx-3';
         quantityDisplay.textContent = item.quantity;
-        
         const plusBtn = document.createElement('button');
         plusBtn.id = 'modalPlusBtn';
         plusBtn.className = 'btn btn-lg btn-outline-success';
@@ -300,10 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
             plusBtn.disabled = true;
         }
         plusBtn.addEventListener('click', () => handleChangeQuantity(item.id, 1, true));
-
         controlsDiv.append(minusBtn, quantityDisplay, plusBtn);
         modalBody.append(title, code, controlsDiv);
-        
         itemModal.classList.add('active');
         itemModalBackdrop.classList.add('active');
     }
@@ -321,36 +314,27 @@ document.addEventListener('DOMContentLoaded', () => {
             plusBtn.disabled = item.quantity >= item.maxStock;
         }
     }
-
-    // ================= EVENT HANDLERS & LOGIC =================
     
     function handleChangeQuantity(itemId, delta) {
         const item = state.items.find(i => i.id === itemId);
         if (!item) return;
-
         const newQuantity = item.quantity + delta;
-
         if (newQuantity < 0 || newQuantity > item.maxStock) {
             return;
         }
-
         const quantityAdded = newQuantity > item.quantity;
         item.quantity = newQuantity;
-        
         if (itemModal.classList.contains('active')) {
             updateModalUI(item);
         }
-        
         updateAllUI();
-
         if (quantityAdded) {
             cartSummary.classList.add('animate-shake');
             cartSummary.addEventListener('animationend', () => {
                 cartSummary.classList.remove('animate-shake');
             }, { once: true });
-
             const cardElement = document.querySelector(`[data-item-id="${item.id}"] .item-card`);
-            if(cardElement) {
+            if (cardElement) {
                 cardElement.classList.add('animate-flash');
                 cardElement.addEventListener('animationend', () => {
                     cardElement.classList.remove('animate-flash');
@@ -358,75 +342,59 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    
+
     function handleSuccessfulWithdrawal() {
         state.items.forEach(item => item.quantity = 0);
-        
         setTimeout(() => {
             navigateTo('screen5');
         }, 4000);
     }
-    
+
     async function handleConfirmWithdrawal() {
-        const nfcButton = document.getElementById('nfcConfirmIcon');
-        nfcButton.disabled = true;
+        nfcConfirmBtn.disabled = true;
         try {
             const response = await submitWithdrawal();
             showToast(response.message, 'success');
-
             const withdrawnItems = state.items.filter(item => item.quantity > 0);
             const totalItems = withdrawnItems.reduce((sum, item) => sum + item.quantity, 0);
-            
             state.lastWithdrawal = withdrawnItems;
-
             totalItemsText.textContent = totalItems;
             withdrawalItemsList.innerHTML = '';
             state.lastWithdrawal.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'list-group-item';
-                li.innerHTML = `
-                    <span>${item.name}</span>
-                    <span class="badge bg-primary rounded-pill">${item.quantity}</span>
-                `;
+                li.innerHTML = `<span>${item.name}</span> <span class="badge bg-primary rounded-pill">${item.quantity}</span>`;
                 withdrawalItemsList.appendChild(li);
             });
-            
             navigateTo('screen4');
             handleSuccessfulWithdrawal();
-
         } catch (error) {
             showToast(error.message, 'error');
         } finally {
-            nfcButton.disabled = false;
+            nfcConfirmBtn.disabled = false;
         }
     }
     
     // ================= EVENT LISTENERS SETUP =================
-    
     document.getElementById('startBtn').addEventListener('click', () => navigateTo('screen1'));
     document.getElementById('logoutBtn').addEventListener('click', () => navigateTo('screen1'));
     document.getElementById('nfcAuthIcon').addEventListener('click', () => navigateTo('screen2'));
-    
     reviewBtn.addEventListener('click', () => {
         renderReviewScreen();
         navigateTo('screen3');
     });
-
     document.getElementById('cancelReviewBtn').addEventListener('click', () => {
         navigateTo('screen2');
     });
-
-    document.getElementById('nfcConfirmIcon').addEventListener('click', handleConfirmWithdrawal);
+    nfcConfirmBtn.addEventListener('click', handleConfirmWithdrawal);
     document.getElementById('nfcExitIcon').addEventListener('click', () => navigateTo('screen0'));
     searchInput.addEventListener('input', (e) => renderItems(e.target.value));
-
     cartSummary.addEventListener('click', () => {
         if (state.items.some(item => item.quantity > 0)) {
             renderReviewScreen();
             navigateTo('screen3');
         }
     });
-
     modalCloseBtn.addEventListener('click', closeModal);
     itemModalBackdrop.addEventListener('click', closeModal);
 
