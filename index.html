@@ -12,19 +12,12 @@
 </head>
 <body class="bg-light">
 
-    <main class="kiosk-screen kiosk-screen--intro active" id="screen0">
-        <div class="d-flex flex-column justify-content-center align-items-center h-100">
-            <h1 class="display-1 fw-bold animate-fade" id="introTitle">DASA</h1>
-            <p class="lead animate-fade">Bem-vindo ao LabSync</p>
-            <button class="btn btn-outline-primary mt-4" id="startBtn">Iniciar (Simular Crachá)</button>
-        </div>
-    </main>
-
     <main class="kiosk-screen" id="screen1">
-        <div class="d-flex flex-column justify-content-center align-items-center h-100">
-            <h1 class="display-4 fw-bold text-primary animate-fade">APROXIME SEU CRACHÁ</h1>
-            <p class="text-muted animate-fade">Para iniciar a retirada de insumos</p>
-            <div class="nfc-icon" id="nfcAuthIcon" title="Clique para simular NFC" role="button" tabindex="0">
+    <div class="d-flex flex-column justify-content-start align-items-center h-100">
+        <img src="images/logo-removebg-preview.png" alt="Logotipo LabSync" class="app-logo mb-5">
+        <h1 class="display-4 fw-bold animate-fade">APROXIME SEU CRACHÁ</h1>
+        <p class="animate-fade">Para iniciar a retirada de insumos</p>
+        <div class="nfc-icon" id="nfcAuthIcon" title="Clique para simular NFC" role="button" tabindex="0">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m-9-9h2m14 0h2m-3.5-3.5l1.5-1.5M6 6l1.5 1.5M17.5 17.5l1.5 1.5M6 18l1.5-1.5"/>
                 </svg>
@@ -46,7 +39,10 @@
                     <button class="btn btn-sm btn-outline-secondary ms-3" id="logoutBtn">Sair</button>
                 </div>
                 <div class="col-12 mt-2">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar item por nome ou código...">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Buscar item por nome ou código...">
+                        <button id="clearSearchBtn" class="clear-search-btn" style="display: none;">&times;</button>
+                    </div>
                 </div>
             </header>
             <div class="row item-grid" id="itemGrid"></div>
@@ -79,18 +75,6 @@
             <div class="withdrawal-summary" id="withdrawalSummary">
                 <p class="lead">Você retirou <strong id="totalItemsText">0</strong> itens:</p>
                 <ul class="list-group" id="withdrawalItemsList"></ul>
-            </div>
-        </div>
-    </main>
-
-    <main class="kiosk-screen" id="screen5">
-        <div class="d-flex flex-column justify-content-center align-items-center h-100">
-            <h1 class="display-4 fw-bold text-primary animate-fade">APROXIME PARA SAIR</h1>
-            <p class="text-muted animate-fade">Para finalizar e travar o almoxarifado</p>
-            <div class="nfc-icon" id="nfcExitIcon" title="Clique para simular NFC de Saída" role="button" tabindex="0">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m-9-9h2m14 0h2m-3.5-3.5l1.5-1.5M6 6l1.5 1.5M17.5 17.5l1.5 1.5M6 18l1.5-1.5"/>
-                </svg>
             </div>
         </div>
     </main>

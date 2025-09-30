@@ -3,20 +3,21 @@
    ========================================================================== */
 :root {
     --dasa-dark-blue: #0D274D;
-    --dasa-medium-blue: #1A4273;
-    --dasa-red-accent: #EF4123;
-    --dasa-light-blue-accent: #22addb;
-    --dasa-background: #FFFFFF;
-    --dasa-light-gray: #F8F9FA;
-    
-    --bs-primary: var(--dasa-dark-blue);
-    --bs-primary-rgb: 13, 39, 77;
-    --bs-danger: var(--dasa-red-accent);
-    --bs-danger-rgb: 239, 65, 35;
-    --bs-body-font-family: 'Inter', sans-serif;
-    --bs-body-bg: var(--dasa-light-gray);
-}
+    --dasa-red-accent: #ff751f; /* Novo tom alaranjado */
+    --dasa-light-blue-accent: #5AC3E5; /* Novo tom de azul claro */
+    --dasa-card-bg: linear-gradient(200deg, #259bbb, #ff914d); /* Novo gradiente */
+    --dasa-border: rgba(255, 255, 255, 0.1);
+    --dasa-white: #FFFFFF;
+    --dasa-white-50: rgba(255, 255, 255, 0.5);
 
+    /* Overrides do Bootstrap */
+    --bs-primary: var(--dasa-dark-blue);
+    --bs-primary-rgb: 13, 39, 77; /* RGB correspondente a #0D274D */
+    --bs-info: var(--dasa-light-blue-accent);
+    --bs-danger: var(--dasa-red-accent); /* Atualizando o 'danger' para o novo tom */
+    --bs-font-sans-serif: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --bs-body-bg: #F8F9FA; /* Mantendo o cinza claro de fundo */
+}
 /* ===== Estrutura Base e Telas ===== */
 body {
     overflow: hidden;
@@ -41,7 +42,7 @@ body {
 }
 
 .kiosk-screen--intro {
-    background: linear-gradient(-45deg, var(--dasa-dark-blue), var(--dasa-medium-blue), var(--dasa-light-blue-accent), var(--dasa-dark-blue));
+    background: linear-gradient(-45deg, var(--dasa-dark-blue), var(--dasa-light-blue-accent), var(--dasa-red-accent), var(--dasa-dark-blue));
     background-size: 400% 400%;
     animation: gradientShift 15s ease infinite;
 }
@@ -350,3 +351,59 @@ h1, .h1, .display-1, .display-4, .display-5 {
         margin-bottom: 0.25rem;
     }
 }
+
+/* Estilos para o botão de limpar a busca */
+.search-wrapper {
+    position: relative; /* Cria o contexto para o posicionamento do botão */
+}
+
+.clear-search-btn {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%); /* Centraliza o botão verticalmente */
+    background: none;
+    border: none;
+    font-size: 1.5rem; /* Tamanho do 'X' */
+    color: #6c757d; /* Cor cinza sutil */
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+.clear-search-btn:hover {
+    color: #343a40; /* Cor um pouco mais escura ao passar o mouse */
+}
+
+.app-logo {
+    max-width: 250px; /* Define a largura máxima da logo */
+    width: 100%;      /* Garante que ela seja responsiva em telas menores */
+    height: auto;     /* Mantém a proporção da imagem */
+}
+
+#screen1 > .d-flex {
+    padding-top: 0vh; /* Ajuste este valor para subir ou descer o conteúdo */
+}
+
+#screen1 {
+    background: linear-gradient(-45deg, var(--dasa-dark-blue), #1a4273, var(--dasa-light-blue-accent), var(--dasa-dark-blue));
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+/* 2. Altera a cor dos textos para branco */
+#screen1 h1,
+#screen1 p {
+    color: var(--dasa-white);
+}
+
+/* 3. Altera a cor do ícone de NFC para laranja */
+#screen1 .nfc-icon {
+    background-color: var(--dasa-red-accent); /* Nosso laranja */
+}
+
+/* 4. Ajusta a sombra do hover para combinar com a nova cor */
+#screen1 .nfc-icon:hover {
+    box-shadow: 0 0 15px rgba(255, 117, 31, 0.6); /* Sombra laranja */
+}
+

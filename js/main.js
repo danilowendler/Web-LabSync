@@ -47,6 +47,7 @@ async function handleAuthenticationScan(cardCode) {
     try {
         // Agora usamos a função importada no topo do arquivo
         const userData = await authenticateUser(cardCode);
+        showToast(`Bem-vindo, ${userData.name}!`, 'success');
         
         state.currentUser = userData;
         document.getElementById('welcomeMessage').textContent = `Olá, ${state.currentUser.name}`;
@@ -109,7 +110,7 @@ async function handleConfirmWithdrawal() {
 function handleSuccessfulWithdrawalReset() {
     state.items.forEach(item => item.quantity = 0);
     setTimeout(() => {
-        navigateTo('screen5');
+        navigateTo('screen1');
     }, 4000);
 }
 
@@ -169,19 +170,53 @@ const callbacks = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    // --- REFERÊNCIAS DE ELEMENTOS USADOS APENAS AQUI ---
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+    // --- INICIALIZAÇÃO DA APLICAÇÃO ---
+    
+    // Garante que a barra de pesquisa comece sempre limpa
+    searchInput.value = '';
+
     // Ativa o "ouvinte" global de teclado para os scanners
     setupScannerListener();
+  
+    // --- LÓGICA DA BARRA DE PESQUISA ---
 
-    // Conecta todos os eventos de clique do usuário
-    document.getElementById('startBtn').addEventListener('click', () => navigateTo('screen1'));
+    // Listener para mostrar/esconder o botão 'X' enquanto o usuário digita
+    searchInput.addEventListener('input', () => {
+        updateAllUI(callbacks); // Atualiza a lista de itens filtrada
+        
+        // Mostra o botão 'X' se a barra de pesquisa tiver texto, senão, esconde.
+        clearSearchBtn.style.display = searchInput.value.length > 0 ? 'block' : 'none';
+    });
+
+    // Listener para a ação de clique no botão 'X' para limpar a busca
+    clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = ''; // Limpa o valor da barra de pesquisa
+        clearSearchBtn.style.display = 'none'; // Esconde o botão 'X'
+        
+        // Dispara o evento 'input' para que a UI se atualize e mostre todos os itens novamente
+        searchInput.dispatchEvent(new Event('input')); 
+    });
+
+
+    // --- CONEXÃO DOS EVENTOS DE CLIQUE DO USUÁRIO ---
+
+    // Navegação principal e entre telas
     document.getElementById('logoutBtn').addEventListener('click', () => {
         state.currentUser = null;
         state.items = [];
+        searchInput.value = ''; // Também limpa a busca ao sair
+        clearSearchBtn.style.display = 'none';
         navigateTo('screen1');
     });
     document.getElementById('cancelReviewBtn').addEventListener('click', () => navigateTo('screen2'));
-    document.getElementById('nfcExitIcon').addEventListener('click', () => navigateTo('screen0'));
+
+    // Ações principais do fluxo
     document.getElementById('nfcConfirmBtn').addEventListener('click', handleConfirmWithdrawal);
+
+    // Navegação para a tela de revisão
     reviewBtn.addEventListener('click', () => {
         navigateTo('screen3');
         updateAllUI(callbacks);
@@ -192,16 +227,13 @@ document.addEventListener('DOMContentLoaded', () => {
             updateAllUI(callbacks);
         }
     });
-    searchInput.addEventListener('input', () => updateAllUI(callbacks));
+
+    // Modal
     modalCloseBtn.addEventListener('click', closeModal);
     itemModalBackdrop.addEventListener('click', closeModal);
-    
-    // Inicia a aplicação na tela de boas-vindas
-    navigateTo('screen0');
+        
+    // Garante que a aplicação sempre comece na tela de "Aproxime o Crachá"
+    navigateTo('screen1');
 });
 
-// js/main.js
-
-// ADICIONE ESTA LINHA NO FINAL DO ARQUIVO
-// Isso torna a função simulateLogin acessível no console do navegador para testes
 window.simulateLogin = simulateLogin;
