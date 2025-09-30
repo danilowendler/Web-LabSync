@@ -42,7 +42,6 @@ export async function fetchItems(labId) {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'vasco': API_CONFIG.API_KEY,
     },
   });
 
