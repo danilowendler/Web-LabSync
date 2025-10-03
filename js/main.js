@@ -79,27 +79,43 @@ async function handleAuthenticationScan(cardCode) {
     }
 }
 
+/**
+ * Orquestra o fluxo de confirmação e submissão da retirada.
+ */
 async function handleConfirmWithdrawal() {
     const nfcConfirmBtn = document.getElementById('nfcConfirmBtn');
     nfcConfirmBtn.disabled = true;
+
     const itemsInCart = state.items.filter(item => item.quantity > 0);
     if (itemsInCart.length === 0) {
         showToast('Nenhum item selecionado para retirada.', 'info');
         nfcConfirmBtn.disabled = false;
         return;
     }
-    const payload = itemsInCart.map(item => ({
+
+    const userId = state.currentUser.id;
+
+    const itemsPayload = itemsInCart.map(item => ({
         id: item.id,
         takeQuantity: item.quantity,
         labId: state.currentUser.lab
     }));
+    
+    const finalPayload = {
+      userId: userId,
+      items: itemsPayload
+    };
+
     try {
-        await submitWithdrawal(payload);
+        // A chamada agora passa apenas um argumento: o payload completo
+        await submitWithdrawal(finalPayload);
+        
         showToast('Retirada confirmada com sucesso!', 'success');
         state.lastWithdrawal = [...itemsInCart];
         populateSuccessScreen();
         navigateTo('screen4');
         handleSuccessfulWithdrawalReset();
+
     } catch (error) {
         showToast(error.message, 'error');
     } finally {

@@ -55,17 +55,18 @@ export async function fetchItems(labId) {
 
 /**
  * Envia a lista de itens retirados para o backend para registrar a operação.
- * @param {Array<object>} itemsToWithdraw 
+ * @param {object} payload - O objeto completo da requisição, incluindo userId e a lista de itens.
  * @returns {Promise<object>} A resposta de sucesso da API.
  */
-export async function submitWithdrawal(itemsToWithdraw) {
+export async function submitWithdrawal(payload) {
+  // A URL voltou a ser a estática, sem o ID do usuário
   const response = await fetch(`${API_CONFIG.BASE_URL}/stock/take`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'vasco': API_CONFIG.API_KEY,
     },
-    body: JSON.stringify(itemsToWithdraw),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
